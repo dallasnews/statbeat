@@ -434,27 +434,29 @@ function transformFootballGame(gameData) {
   const formPlayTense = (playType) => {
     if (playType === "run") return "ran";
     if (playType === "pass") return "passed";
-    if (playType === "reception") return "caught pass";
+    if (playType === "reception") return "caught a pass";
     if (playType === "interception") return "intercepted";
     return playType.toLowerCase();
   };
 
-  // Add one key moment per quarter with full player names
+  // Add one key moment per quarter with full player names and <h2> for quarter
   Object.entries(quarters).forEach(([quarter, plays]) => {
     if (plays.length > 0) {
       const play = plays[0];
       let moment = "";
       const playerName = getPlayerName(play.player1Id);
       if (play.includesTouchdown) {
-        moment = `${quarter} Quarter: ${playerName} ${formPlayTense(
+        moment = `<h2>${quarter} Quarter</h2><strong>${playerName}</strong> ${formPlayTense(
           play.playType
         )} for a ${play.lengthOfPlay}-yard touchdown`;
       } else if (play.playType === "interception") {
-        moment = `${quarter} Quarter: ${playerName} intercepted a pass`;
+        moment = `<h2>${quarter} Quarter</h2><strong>${playerName}</strong> intercepted a pass`;
       }
       if (moment) keyMoments.push(moment);
     }
   });
+
+  const keyMomentsHtml = keyMoments.join("<br>");
 
   // Find longest scoring play with full player name
   const scoringPlays = plays.filter((play) => play.includesTouchdown);
@@ -516,22 +518,22 @@ function transformFootballGame(gameData) {
         content: formLongestScoreText(longestScoringPlay),
       },
       {
+        couter: "0",
         type: "text",
-        content: "Key Moments",
+        content: "<h2>Key Moments</h2>",
       },
       {
+        couter: "1",
         type: "text",
-        content: keyMoments,
+        content: keyMomentsHtml,
       },
 
       {
+        couter: "2",
         type: "text",
-        content: "Top Performers",
+        content: "<h2>Top Performers</h2>",
       },
-      {
-        type: "text",
-        content: contentText,
-      },
+      { couter: "3", type: "text", content: contentText },
     ],
     featuredImageId: featuredImageId,
     home: { ...game.home.season.team },
