@@ -1,0 +1,62 @@
+get_parameter():about to call ssm...
+{
+  "headlines": {
+    "basic": "Lamar Fake vs Allen Fake"
+  },
+  "subheadlines": {
+    "basic": "Allen Fake defeated Lamar Fake 22-20 on December 31, 2018"
+  },
+  "content_elements": [
+    {
+      "type": "text",
+      "content": "Longest Scoring Play"
+    },
+    {
+      "type": "text",
+      "content": "ronnie  wesley scored the longest touchdown of the night on a 95-yard kickoffreturn in the first."
+    },
+    {
+      "type": "text",
+      "content": "Key Moments"
+    },
+    {
+      "type": "text",
+      "content": [
+        "1 Quarter: marcus  ward ran for a -45-yard touchdown",
+        "2 Quarter: The  Quarterback passed for a 41-yard touchdown"
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Top Performers"
+    },
+    {
+      "type": "text",
+      "content": "kyler  murray  led Allen Fake with 119 rushing yards, 14 passing yards, 2 TDs, 0/2 passing. ronnie  wesley followed for Lamar Fake with 66 rushing yards. The  Quarterback also contributed for Lamar Fake with 29 rushing yards, 111 passing yards, 2 TDs, 0/7 passing."
+    }
+  ],
+  "featuredImageId": null,
+  "home": {
+    "name": "Allen Fake",
+    "teamCode": "AF",
+    "school": {
+      "name": "Allen Fake",
+      "logoUrl": null,
+      "__typename": "School"
+    },
+    "__typename": "Team"
+  },
+  "away": {
+    "id": "696",
+    "name": "Lamar Fake",
+    "teamCode": "LF",
+    "school": {
+      "id": "1397",
+      "name": "Lamar Fake",
+      "logoUrl": null,
+      "__typename": "School"
+    },
+    "__typename": "Team"
+  },
+  "game_comment": "Allen Holds off Lamar to win a classic state title game\n\nKyler Murray's 111 yards rushing and 3 total touchdowns helped carry his Allen Eagles to a 21-15 victory over Houston Lamar.\n\nThe Eagles defense did their part as they made it difficult for the Lamar offense to pick up points as they were held to a new season low.  Running backs Darrell Colbert and Ronnie Wesley who although both scored, were held under the season averages.\n\nDespite only throwing for 39 yards, Murray's 100 rush yards and zero turnovers were key figures in the Eagle victory.\n\nThis is the first state championship for Allen in its school history."
+}

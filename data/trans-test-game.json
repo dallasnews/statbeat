@@ -1,116 +1,20 @@
 get_parameter():about to call ssm...
-scoring [
-  {
-    down: 1,
-    quarter: 1,
-    ballSpot: 0,
-    playType: 'run',
-    yardLine: 3,
-    player1Id: '130271',
-    distanceToGo: 100,
-    lengthOfPlay: 3,
-    timeRemaining: '8:17',
-    ballSpotTeamId: '31196',
-    yardLineTeamId: '31196',
-    awayTotalPoints: 6,
-    homeTotalPoints: 0,
-    awayPointsGained: 6,
-    homePointsGained: 0,
-    convertsFirstDown: false,
-    includesTouchdown: true,
-    teamInPossessionId: '31025'
-  },
-  {
-    down: 2,
-    quarter: 1,
-    ballSpot: 0,
-    playType: 'run',
-    yardLine: 1,
-    player1Id: '130271',
-    distanceToGo: 100,
-    lengthOfPlay: 1,
-    timeRemaining: '3:55',
-    ballSpotTeamId: '31196',
-    yardLineTeamId: '31196',
-    awayTotalPoints: 13,
-    homeTotalPoints: 0,
-    awayPointsGained: 6,
-    homePointsGained: 0,
-    convertsFirstDown: false,
-    includesTouchdown: true,
-    teamInPossessionId: '31025'
-  },
-  {
-    down: 2,
-    quarter: 3,
-    ballSpot: 0,
-    playType: 'run',
-    yardLine: 10,
-    player1Id: '130711',
-    distanceToGo: 100,
-    lengthOfPlay: 10,
-    timeRemaining: '4:21',
-    ballSpotTeamId: '31025',
-    yardLineTeamId: '31025',
-    awayTotalPoints: 17,
-    homeTotalPoints: 6,
-    awayPointsGained: 0,
-    homePointsGained: 6,
-    convertsFirstDown: true,
-    includesTouchdown: true,
-    teamInPossessionId: '31196'
-  },
-  {
-    down: 3,
-    quarter: 4,
-    ballSpot: 0,
-    playType: 'pass',
-    yardLine: 11,
-    player1Id: '130277',
-    player2Id: '130279',
-    distanceToGo: 10,
-    lengthOfPlay: 11,
-    timeRemaining: '11:55',
-    ballSpotTeamId: '31196',
-    yardLineTeamId: '31196',
-    awayTotalPoints: 23,
-    homeTotalPoints: 6,
-    awayPointsGained: 6,
-    homePointsGained: 0,
-    convertsFirstDown: true,
-    includesTouchdown: true,
-    teamInPossessionId: '31025'
-  },
-  {
-    down: 3,
-    quarter: 4,
-    ballSpot: 0,
-    playType: 'pass',
-    yardLine: 6,
-    player1Id: '130277',
-    player2Id: '130281',
-    distanceToGo: 100,
-    lengthOfPlay: 6,
-    timeRemaining: '2:54',
-    ballSpotTeamId: '31196',
-    yardLineTeamId: '31196',
-    awayTotalPoints: 30,
-    homeTotalPoints: 6,
-    awayPointsGained: 6,
-    homePointsGained: 0,
-    convertsFirstDown: false,
-    includesTouchdown: true,
-    teamInPossessionId: '31025'
-  }
-]
 {
   "headlines": {
-    "basic": "[object Object] vs [object Object]"
+    "basic": "W.T. White vs Hillcrest"
   },
   "subheadlines": {
     "basic": "W.T. White defeated Hillcrest 6-31 on August 28, 2024"
   },
   "content_elements": [
+    {
+      "type": "text",
+      "content": "Longest Scoring Play"
+    },
+    {
+      "type": "text",
+      "content": "Andrew Paredez scored the longest touchdown of the night on a 11-yard pass in the fourth."
+    },
     {
       "type": "text",
       "content": "Key Moments"
@@ -119,7 +23,7 @@ scoring [
       "type": "text",
       "content": [
         "1 Quarter: Asher Randall intercepted a pass",
-        "3 Quarter: Isaac Dorn runed for a 10-yard touchdown",
+        "3 Quarter: Isaac Dorn ran for a 10-yard touchdown",
         "4 Quarter: Andrew Paredez passed for a 11-yard touchdown"
       ]
     },
@@ -129,10 +33,11 @@ scoring [
     },
     {
       "type": "text",
-      "content": "Ben Ebeke led [object Object] with 182 rushing yards, 2 TDs. Isaac Dorn followed for [object Object] with 54 rushing yards, 1 TD. Asher Randall also contributed for [object Object] with 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception. Andrew Paredez also contributed for [object Object] with 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing."
+      "content": "Ben Ebeke led W.T. White with 182 rushing yards, 2 TDs. Isaac Dorn followed for Hillcrest with 54 rushing yards, 1 TD. Asher Randall also contributed for Hillcrest with 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception. Andrew Paredez also contributed for W.T. White with 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing."
     }
   ],
-  "home_team": {
+  "featuredImageId": "WH5VZHUTMVGTTEUFPBRK75C2VA",
+  "home": {
     "name": "Panthers",
     "teamCode": "HC",
     "school": {
@@ -142,7 +47,7 @@ scoring [
     },
     "__typename": "Team"
   },
-  "away_team": {
+  "away": {
     "id": "1992",
     "name": "Longhorns",
     "teamCode": "WT",

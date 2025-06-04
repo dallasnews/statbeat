@@ -410,10 +410,10 @@ function transformFootballGame(gameData) {
     .map((p, i) => {
       const intro =
         i === 0
-          ? `${p.name} led ${p.team}`
+          ? `${p.name} led ${p.team.school.name}`
           : i === 1
-          ? `${p.name} followed for ${p.team}`
-          : `${p.name} also contributed for ${p.team}`;
+          ? `${p.name} followed for ${p.team.school.name}`
+          : `${p.name} also contributed for ${p.team.school.name}`;
       return `${intro} with ${p.statline}.`;
     })
     .join(" ");
@@ -458,7 +458,6 @@ function transformFootballGame(gameData) {
 
   // Find longest scoring play with full player name
   const scoringPlays = plays.filter((play) => play.includesTouchdown);
-  console.log("scoring", scoringPlays);
   const longestScoringPlay = [...scoringPlays].sort(
     (a, b) => b.lengthOfPlay - a.lengthOfPlay
   )[0];
@@ -473,22 +472,49 @@ function transformFootballGame(gameData) {
     `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}. ` +
       `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
 
+  const winningImage =
+    homeScore > awayScore ? homeTeam.school : awayTeam.school;
+
+  // Extract image ID from logoUrl using regex
+  const extractImageId = (url) => {
+    if (!url) return null;
+    const match = url.match(/\/([^/]+)\.png$/);
+    return match ? match[1] : null;
+  };
+
+  const featuredImageId = extractImageId(winningImage.logoUrl);
+
+  const formatQuarter = (quarter) => {
+    if (quarter === 1) return "first";
+    if (quarter === 2) return "second";
+    if (quarter === 3) return "third";
+    if (quarter === 4) return "fourth";
+  };
+
+  const formLongestScoreText = (longestScoringPlay) => {
+    const playerName = getPlayerName(longestScoringPlay.player1Id);
+    const playType = longestScoringPlay.playType;
+    const yardage = longestScoringPlay.lengthOfPlay;
+    const quarter = longestScoringPlay.quarter;
+    return `${playerName} scored the longest touchdown of the night on a ${yardage}-yard ${playType.toLowerCase()} in the ${formatQuarter(
+      quarter
+    )}.`;
+  };
+
   return {
-    headlines: { basic: `${awayTeam} vs ${homeTeam}` },
+    headlines: { basic: `${awayTeam.school.name} vs ${homeTeam.school.name}` },
     subheadlines: {
       basic: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
     },
     content_elements: [
-      // {
-      //   type: "Best Play",
-      //   description: longestScoringPlay
-      //     ? `${getPlayerName(
-      //         longestScoringPlay?.player1Id
-      //       )} scored the longest touchdown of the night on a ${
-      //         longestScoringPlay?.lengthOfPlay
-      //       }-yard ${longestScoringPlay?.playType?.toLowerCase()} in the ${longestScoringPlay?.quarter?.toLowerCase()}.`
-      //     : "No scoring plays recorded.",
-      // },
+      {
+        type: "text",
+        content: "Longest Scoring Play",
+      },
+      {
+        type: "text",
+        content: formLongestScoreText(longestScoringPlay),
+      },
       {
         type: "text",
         content: "Key Moments",
@@ -507,8 +533,9 @@ function transformFootballGame(gameData) {
         content: contentText,
       },
     ],
-    home: { ...game.home },
-    away: { ...game.away },
+    featuredImageId: featuredImageId,
+    home: { ...game.home.season.team },
+    away: { ...game.away.season.team },
     game_comment: gameComment,
   };
 }
