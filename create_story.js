@@ -181,10 +181,10 @@ function storyContentToANS(storyContent) {
         version: "0.10.10",
         canonical_website: "dallas-news",
         headlines: {
-            basic: storyContent.headline
+            basic: storyContent.headlines.basic
         },
         subheadlines: {
-            basic: storyContent.subheadline
+            basic: storyContent.subheadline.basic
         },
         content_elements: storyContent.content_elements
     };
