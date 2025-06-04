@@ -270,8 +270,195 @@ async function queryFootballGame(gameId) {
 }
 
 function transformFootballGame(gameData) {
-  // TODO: Implement game data transformation logic
-  throw new Error("transformFootballGame not implemented");
+  const game = gameData.data.GameByID;
+  if (!game) {
+    throw new Error("No game data found");
+  }
+
+  // Extract basic game info from plays
+  const lastPlay =
+    game.playsBlob?.summary[game.playsBlob.summary.length - 1] || {};
+  const homeScore = lastPlay.homeTotalPoints || 0;
+  const awayScore = lastPlay.awayTotalPoints || 0;
+  const gameDate = new Date(game.gameDateString).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Parse plays to find teams and players
+  const plays = game.playsBlob?.summary || [];
+  const teamIds = new Set(plays.map((play) => play.teamInPossessionId));
+  const homeTeamId = Array.from(teamIds)[0];
+  const awayTeamId = Array.from(teamIds)[1];
+
+  // Find team names from plays
+  const homeTeam =
+    plays.find((play) => play.teamInPossessionId === homeTeamId)
+      ?.ballSpotTeamId === homeTeamId
+      ? "W.T. White"
+      : "Hillcrest";
+  const awayTeam = homeTeam === "W.T. White" ? "Hillcrest" : "W.T. White";
+
+  // Extract player performances from plays
+  const playerStats = {};
+  plays.forEach((play) => {
+    if (play.player1Id) {
+      const playerId = play.player1Id;
+      if (!playerStats[playerId]) {
+        playerStats[playerId] = {
+          name: play.player1Name || `Player ${playerId}`,
+          team: play.teamInPossessionId === homeTeamId ? homeTeam : awayTeam,
+          rushingYards: 0,
+          passingYards: 0,
+          receivingYards: 0,
+          touchdowns: 0,
+          receptions: 0,
+          completions: 0,
+          attempts: 0,
+          interceptions: 0,
+        };
+      }
+
+      // Update stats based on play type
+      switch (play.playType) {
+        case "run":
+          playerStats[playerId].rushingYards += play.lengthOfPlay || 0;
+          if (play.includesTouchdown) playerStats[playerId].touchdowns++;
+          break;
+        case "pass":
+          playerStats[playerId].passingYards += play.lengthOfPlay || 0;
+          playerStats[playerId].attempts++;
+          if (play.completion) playerStats[playerId].completions++;
+          if (play.includesTouchdown) playerStats[playerId].touchdowns++;
+          break;
+        case "reception":
+          playerStats[playerId].receivingYards += play.lengthOfPlay || 0;
+          playerStats[playerId].receptions++;
+          if (play.includesTouchdown) playerStats[playerId].touchdowns++;
+          break;
+        case "interception":
+          playerStats[playerId].interceptions++;
+          break;
+      }
+    }
+  });
+
+  // Find top performers
+  const topPerformers = Object.values(playerStats)
+    .filter(
+      (player) =>
+        player.rushingYards > 50 ||
+        player.passingYards > 50 ||
+        player.receivingYards > 50
+    )
+    .map((player) => ({
+      name: player.name,
+      team: player.team,
+      statline: [
+        player.rushingYards > 0 ? `${player.rushingYards} rushing yards` : null,
+        player.passingYards > 0 ? `${player.passingYards} passing yards` : null,
+        player.receivingYards > 0
+          ? `${player.receivingYards} receiving yards`
+          : null,
+        player.touchdowns > 0
+          ? `${player.touchdowns} TD${player.touchdowns > 1 ? "s" : ""}`
+          : null,
+        player.receptions > 0
+          ? `${player.receptions} reception${player.receptions > 1 ? "s" : ""}`
+          : null,
+        player.attempts > 0
+          ? `${player.completions}/${player.attempts} passing`
+          : null,
+        player.interceptions > 0
+          ? `${player.interceptions} interception${
+              player.interceptions > 1 ? "s" : ""
+            }`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(", "),
+    }))
+    .sort((a, b) => {
+      // Sort by total yards (rushing + passing + receiving)
+      const aYards = parseInt(a.statline.match(/\d+/)?.[0] || "0");
+      const bYards = parseInt(b.statline.match(/\d+/)?.[0] || "0");
+      return bYards - aYards;
+    })
+    .slice(0, 4);
+
+  // Find key moments from plays
+  const keyMoments = [];
+  const quarters = {};
+  plays.forEach((play) => {
+    if (play.includesTouchdown || play.playType === "interception") {
+      const quarter = play.quarter;
+      if (!quarters[quarter]) {
+        quarters[quarter] = [];
+      }
+      quarters[quarter].push(play);
+    }
+  });
+
+  // Add one key moment per quarter
+  Object.entries(quarters).forEach(([quarter, plays]) => {
+    if (plays.length > 0) {
+      const play = plays[0];
+      let moment = "";
+      if (play.includesTouchdown) {
+        moment = `${quarter} Quarter: ${
+          play.player1Name
+        } ${play.playType.toLowerCase()}ed for a ${
+          play.lengthOfPlay
+        }-yard touchdown`;
+      } else if (play.playType === "interception") {
+        moment = `${quarter} Quarter: ${play.player1Name} intercepted a pass`;
+      }
+      if (moment) keyMoments.push(moment);
+    }
+  });
+
+  // Find longest scoring play
+  const scoringPlays = plays.filter((play) => play.includesTouchdown);
+  const longestScoringPlay = [...scoringPlays].sort(
+    (a, b) => b.lengthOfPlay - a.lengthOfPlay
+  )[0];
+
+  // Generate game comment
+  const winningTeam = homeScore > awayScore ? homeTeam : awayTeam;
+  const losingTeam = homeScore > awayScore ? awayTeam : homeTeam;
+  const gameComment =
+    game.gameStory ||
+    `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}. ` +
+      `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
+
+  return {
+    headline: `${awayTeam} vs ${homeTeam}`,
+    subheadline: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+    content_elements: [
+      // {
+      //   type: "Best Play",
+      //   description: longestScoringPlay
+      //     ? `${
+      //         longestScoringPlay?.player1Name
+      //       } scored the longest touchdown of the night on a ${
+      //         longestScoringPlay?.lengthOfPlay
+      //       }-yard ${longestScoringPlay?.playType?.toLowerCase()} in the ${longestScoringPlay?.quarter?.toLowerCase()}.`
+      //     : "No scoring plays recorded.",
+      // },
+      {
+        type: "Key Moments",
+        description: keyMoments,
+      },
+      {
+        type: "Top Performers",
+        players: topPerformers,
+      },
+    ],
+    home_team: homeTeam,
+    away_team: awayTeam,
+    game_comment: gameComment,
+  };
 }
 
 async function uploadGameData(transformedData, isTest) {
