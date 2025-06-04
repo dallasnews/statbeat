@@ -387,6 +387,19 @@ function transformFootballGame(gameData) {
     })
     .slice(0, 4);
 
+  // Turn into text paragraph:
+  const contentText = topPerformers
+    .map((p, i) => {
+      const intro =
+        i === 0
+          ? `${p.name} led ${p.team}`
+          : i === 1
+          ? `${p.name} followed for ${p.team}`
+          : `${p.name} also contributed for ${p.team}`;
+      return `${intro} with ${p.statline}.`;
+    })
+    .join(" ");
+
   // Find key moments from plays
   const keyMoments = [];
   const quarters = {};
@@ -433,8 +446,10 @@ function transformFootballGame(gameData) {
       `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
 
   return {
-    headline: `${awayTeam} vs ${homeTeam}`,
-    subheadline: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+    headlines: { basic: `${awayTeam} vs ${homeTeam}` },
+    subheadlines: {
+      basic: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+    },
     content_elements: [
       // {
       //   type: "Best Play",
@@ -447,12 +462,21 @@ function transformFootballGame(gameData) {
       //     : "No scoring plays recorded.",
       // },
       {
-        type: "Key Moments",
-        description: keyMoments,
+        type: "text",
+        content: "Key Moments",
       },
       {
-        type: "Top Performers",
-        players: topPerformers,
+        type: "text",
+        content: keyMoments,
+      },
+
+      {
+        type: "text",
+        content: "Top Performers",
+      },
+      {
+        type: "text",
+        content: contentText,
       },
     ],
     home_team: homeTeam,
