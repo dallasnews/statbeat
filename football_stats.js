@@ -431,6 +431,14 @@ function transformFootballGame(gameData) {
     }
   });
 
+  const formPlayTense = (playType) => {
+    if (playType === "run") return "ran";
+    if (playType === "pass") return "passed";
+    if (playType === "reception") return "caught pass";
+    if (playType === "interception") return "intercepted";
+    return playType.toLowerCase();
+  };
+
   // Add one key moment per quarter with full player names
   Object.entries(quarters).forEach(([quarter, plays]) => {
     if (plays.length > 0) {
@@ -438,9 +446,9 @@ function transformFootballGame(gameData) {
       let moment = "";
       const playerName = getPlayerName(play.player1Id);
       if (play.includesTouchdown) {
-        moment = `${quarter} Quarter: ${playerName} ${play.playType.toLowerCase()}ed for a ${
-          play.lengthOfPlay
-        }-yard touchdown`;
+        moment = `${quarter} Quarter: ${playerName} ${formPlayTense(
+          play.playType
+        )} for a ${play.lengthOfPlay}-yard touchdown`;
       } else if (play.playType === "interception") {
         moment = `${quarter} Quarter: ${playerName} intercepted a pass`;
       }
@@ -499,8 +507,8 @@ function transformFootballGame(gameData) {
         content: contentText,
       },
     ],
-    home_team: { ...game.home.season.team },
-    away_team: { ...game.away.season.team },
+    home: { ...game.home },
+    away: { ...game.away },
     game_comment: gameComment,
   };
 }
