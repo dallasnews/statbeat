@@ -1,5 +1,11 @@
+require("dotenv").config();
 const { readFile } = require("fs").promises;
 const util = require("./util");
+const { gql, ApolloQueryResult } = require("@apollo/client");
+const React = require("react");
+const ReactDOMServer = require("react-dom/server");
+const _ = require("lodash");
+const { initClient, upload } = require("./util");
 
 // ======================================================================
 // MAIN
@@ -69,8 +75,198 @@ async function run() {
 
 // Helper functions
 async function queryFootballGame(gameId) {
-  // TODO: Implement actual API call to fetch game data
-  throw new Error("queryFootballGame not implemented");
+  const client = await initClient();
+  const Q = gql`
+  query {
+    GameByID(
+      id: "${gameId}"
+    ) {
+      id
+      gameDateString
+      gameTimeString
+      gameIsDistrict
+      gameStatus
+      gameStory
+      playsBlob
+      location {
+        name
+      }
+      
+      home {
+        season {
+          
+          team {
+            name
+            teamCode
+            school {
+              name
+               
+            }
+          }
+          
+          district {
+            districtCode
+            conferenceCode
+            label
+          } 
+        }
+        
+        players {
+          player {
+             id
+             person {
+               name
+            }
+          }
+          football {
+             id
+             passingCompletions
+             passingAttempts
+             passingInterceptions 
+             passingYards
+             rushingAttempts
+             rushingYards
+             receptions
+             receivingYards
+          }
+        }
+        
+        football {
+           totalPoints
+           firstQuarterPoints
+           secondQuarterPoints
+           thirdQuarterPoints
+           fourthQuarterPoints
+           overtimePoints
+           overtime2Points
+           overtime3Points
+           passingCompletions
+           passingAttempts
+           passingYards
+           passingTouchdowns
+           passingInterceptions
+           rushingAttempts
+           rushingYards
+           rushingTouchdowns
+           fumbles
+           fumblesLost
+           receptions
+           receivingYards
+           receivingTouchdowns
+           fieldGoalsMade
+           fieldGoalAttempts
+           pointAfterTouchdown
+           pointAfterTouchdownAttempts
+           interceptionTouchdowns
+           pointAfterTouchdownTwoPoints
+           returnTouchdowns
+           pointAfterTouchdownReturns
+           firstDowns
+           penalties
+           penaltyYards
+           pointsAllowed
+           puntingYards
+           punts
+           touchdownPasses
+           touchdownReceptions
+           totalYards
+           yardsAllowed
+        }
+      }
+      away {
+        season {  
+          team {
+            id
+            name
+            teamCode
+            school {
+              id
+              name
+            }
+          }
+          district {
+            districtCode
+            conferenceCode
+            label
+          }
+        }
+        
+        players {
+          player {
+             id
+             person {
+               name
+            }
+          }
+          football {
+             id
+             passingCompletions
+             passingAttempts
+             passingInterceptions 
+             passingYards
+             rushingAttempts
+             rushingYards
+             receptions
+             receivingYards
+          }
+        }
+        
+        football {
+           totalPoints
+           firstQuarterPoints
+           secondQuarterPoints
+           thirdQuarterPoints
+           fourthQuarterPoints
+           overtimePoints
+           overtime2Points
+           overtime3Points
+           passingCompletions
+           passingAttempts
+           passingYards
+           passingTouchdowns
+           passingInterceptions
+           rushingAttempts
+           rushingYards
+           rushingTouchdowns
+           fumbles
+           fumblesLost
+           receptions
+           receivingYards
+           receivingTouchdowns
+           fieldGoalsMade
+           fieldGoalAttempts
+           pointAfterTouchdown
+           pointAfterTouchdownAttempts
+           interceptionTouchdowns
+           pointAfterTouchdownTwoPoints
+           returnTouchdowns
+           pointAfterTouchdownReturns
+           firstDowns
+           penalties
+           penaltyYards
+           pointsAllowed
+           puntingYards
+           punts
+           touchdownPasses
+           touchdownReceptions
+           totalYards
+           yardsAllowed
+        }
+      }
+    }
+  }
+  `;
+  try {
+    const response = await client.query({ query: Q });
+    if (response.data.GameByID.playsBlob)
+      response.data.GameByID.playsBlob = JSON.parse(
+        response.data.GameByID.playsBlob
+      );
+    return response;
+  } catch (err) {
+    console.error(JSON.stringify(err, null, 2));
+    return null;
+  }
 }
 
 function transformFootballGame(gameData) {
