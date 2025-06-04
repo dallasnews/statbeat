@@ -492,22 +492,22 @@ function transformFootballGame(gameData) {
       //     : "No scoring plays recorded.",
       // },
       {
-        couter: "0",
+        counter: "0",
         type: "text",
         content: "<h2>Key Moments</h2>",
       },
       {
-        couter: "1",
+        counter: "1",
         type: "text",
         content: keyMomentsHtml,
       },
 
       {
-        couter: "2",
+        counter: "2",
         type: "text",
         content: "<h2>Top Performers</h2>",
       },
-      { couter: "3", type: "text", content: contentText },
+      { counter: "3", type: "text", content: contentText },
     ],
     home: { ...game.home },
     away: { ...game.away },
