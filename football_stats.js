@@ -494,7 +494,7 @@ function transformFootballGame(gameData) {
       {
         couter: "0",
         type: "text",
-        content: "Key Moments",
+        content: "<h2>Key Moments</h2>",
       },
       {
         couter: "1",
