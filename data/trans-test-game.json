@@ -1,43 +1,42 @@
 get_parameter():about to call ssm...
 {
-  "headline": "Hillcrest vs W.T. White",
-  "subheadline": "Hillcrest defeated W.T. White 6-31 on August 28, 2024",
+  "headline": {
+    "basic": "W.T. White vs Hillcrest"
+  },
+  "subheadline": {
+    "basic": "W.T. White defeated Hillcrest 6-31 on August 28, 2024"
+  },
   "content_elements": [
     {
-      "type": "Key Moments",
-      "description": [
-        "1 Quarter: undefined intercepted a pass",
-        "3 Quarter: undefined runed for a 10-yard touchdown",
-        "4 Quarter: undefined passed for a 11-yard touchdown"
-      ]
+      "type": "text",
+      "content": "1 Quarter: Asher Randall intercepted a pass\n3 Quarter: Isaac Dorn runed for a 10-yard touchdown\n4 Quarter: Andrew Paredez passed for a 11-yard touchdown"
     },
     {
-      "type": "Top Performers",
-      "players": [
-        {
-          "name": "Player 130271",
-          "team": "Hillcrest",
-          "statline": "182 rushing yards, 2 TDs"
-        },
-        {
-          "name": "Player 130711",
-          "team": "W.T. White",
-          "statline": "54 rushing yards, 1 TD"
-        },
-        {
-          "name": "Player 130703",
-          "team": "W.T. White",
-          "statline": "16 rushing yards, 117 passing yards, 0/12 passing, 1 interception"
-        },
-        {
-          "name": "Player 130277",
-          "team": "Hillcrest",
-          "statline": "4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing"
-        }
-      ]
+      "type": "text",
+      "content": "Ben Ebeke from Longhorns had a 182 rushing yards, 2 TDs\nIsaac Dorn from Panthers had a 54 rushing yards, 1 TD\nAsher Randall from Panthers had a 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception\nAndrew Paredez from Longhorns had a 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing"
     }
   ],
-  "home_team": "W.T. White",
-  "away_team": "Hillcrest",
+  "home_team": {
+    "name": "Panthers",
+    "teamCode": "HC",
+    "school": {
+      "name": "Hillcrest",
+      "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/AW6X4NU5XFDSFB275AQ7GQCNTI.png",
+      "__typename": "School"
+    },
+    "__typename": "Team"
+  },
+  "away_team": {
+    "id": "1992",
+    "name": "Longhorns",
+    "teamCode": "WT",
+    "school": {
+      "id": "2498",
+      "name": "W.T. White",
+      "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/WH5VZHUTMVGTTEUFPBRK75C2VA.png",
+      "__typename": "School"
+    },
+    "__typename": "Team"
+  },
   "game_comment": " W.T White running back Ben Ebeke rushed for 182 yards and scored two touchdowns, as W.T. White rolled to a win over Hillcrest 30-6\n\nThe W.T.  White (1-0) defense only needed three plays before forcing the first interception of the year. Ebeke scored on a 3-yard run, then later from 1-yard out to give W.T. White a 14-0 halftime advantage. Quarterback Andrew Paredez helped put the game out of reach by throwing two fourth-quarter touchdowns, finishing with 197 yards on 14 of 21 passing.\n\nHillcrest (0-1) wide receiver Jacoby Ogbanna proved to be reliable all night, ending the contest with eight catches for 100 yards. Quarterback Asher Randall threw for 117 yards.\n"
 }

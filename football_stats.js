@@ -100,7 +100,7 @@ async function queryFootballGame(gameId) {
             teamCode
             school {
               name
-               
+              logoUrl
             }
           }
           
@@ -182,6 +182,7 @@ async function queryFootballGame(gameId) {
             school {
               id
               name
+              logoUrl
             }
           }
           district {
@@ -276,10 +277,10 @@ function transformFootballGame(gameData) {
   }
 
   // Extract basic game info from plays
-  const lastPlay =
-    game.playsBlob?.summary[game.playsBlob.summary.length - 1] || {};
-  const homeScore = lastPlay.homeTotalPoints || 0;
-  const awayScore = lastPlay.awayTotalPoints || 0;
+  // const lastPlay =
+  //   game.playsBlob?.summary[game.playsBlob.summary.length - 1] || {};
+  const homeScore = game.playsBlob?.home.teamStats.totalPoints || 0;
+  const awayScore = game.playsBlob?.away.teamStats.totalPoints || 0;
   const gameDate = new Date(game.gameDateString).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -289,16 +290,33 @@ function transformFootballGame(gameData) {
   // Parse plays to find teams and players
   const plays = game.playsBlob?.summary || [];
   const teamIds = new Set(plays.map((play) => play.teamInPossessionId));
+  const homeTeam = game.home.season.team;
   const homeTeamId = Array.from(teamIds)[0];
+  const awayTeam = game.away.season.team;
   const awayTeamId = Array.from(teamIds)[1];
 
-  // Find team names from plays
-  const homeTeam =
-    plays.find((play) => play.teamInPossessionId === homeTeamId)
-      ?.ballSpotTeamId === homeTeamId
-      ? "W.T. White"
-      : "Hillcrest";
-  const awayTeam = homeTeam === "W.T. White" ? "Hillcrest" : "W.T. White";
+  // Helper function to get player name from ID
+  const getPlayerName = (playerId) => {
+    // Look in home team players
+    const homePlayer = game.home?.players?.find(
+      (p) => p.player.id === playerId
+    );
+    if (homePlayer) {
+      return homePlayer.player.person.name;
+    }
+
+    // Look in away team players
+    const awayPlayer = game.away?.players?.find(
+      (p) => p.player.id === playerId
+    );
+    if (awayPlayer) {
+      return awayPlayer.player.person.name;
+    }
+
+    // Fallback to player1Name if available
+    const play = plays.find((p) => p.player1Id === playerId);
+    return play?.player1Name || `Player ${playerId}`;
+  };
 
   // Extract player performances from plays
   const playerStats = {};
@@ -307,7 +325,7 @@ function transformFootballGame(gameData) {
       const playerId = play.player1Id;
       if (!playerStats[playerId]) {
         playerStats[playerId] = {
-          name: play.player1Name || `Player ${playerId}`,
+          name: getPlayerName(playerId),
           team: play.teamInPossessionId === homeTeamId ? homeTeam : awayTeam,
           rushingYards: 0,
           passingYards: 0,
@@ -400,63 +418,71 @@ function transformFootballGame(gameData) {
     }
   });
 
-  // Add one key moment per quarter
+  // Add one key moment per quarter with full player names
   Object.entries(quarters).forEach(([quarter, plays]) => {
     if (plays.length > 0) {
       const play = plays[0];
       let moment = "";
+      const playerName = getPlayerName(play.player1Id);
       if (play.includesTouchdown) {
-        moment = `${quarter} Quarter: ${
-          play.player1Name
-        } ${play.playType.toLowerCase()}ed for a ${
+        moment = `${quarter} Quarter: ${playerName} ${play.playType.toLowerCase()}ed for a ${
           play.lengthOfPlay
         }-yard touchdown`;
       } else if (play.playType === "interception") {
-        moment = `${quarter} Quarter: ${play.player1Name} intercepted a pass`;
+        moment = `${quarter} Quarter: ${playerName} intercepted a pass`;
       }
       if (moment) keyMoments.push(moment);
     }
   });
 
-  // Find longest scoring play
+  // Find longest scoring play with full player name
   const scoringPlays = plays.filter((play) => play.includesTouchdown);
+  console.log("scoring", scoringPlays);
   const longestScoringPlay = [...scoringPlays].sort(
     (a, b) => b.lengthOfPlay - a.lengthOfPlay
   )[0];
 
   // Generate game comment
-  const winningTeam = homeScore > awayScore ? homeTeam : awayTeam;
-  const losingTeam = homeScore > awayScore ? awayTeam : homeTeam;
+  const winningTeam =
+    homeScore > awayScore ? homeTeam.school.name : awayTeam.school.name;
+  const losingTeam =
+    homeScore > awayScore ? awayTeam.school.name : homeTeam.school.name;
   const gameComment =
     game.gameStory ||
     `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}. ` +
       `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
 
   return {
-    headline: `${awayTeam} vs ${homeTeam}`,
-    subheadline: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+    headline: {
+      basic: `${awayTeam.school.name} vs ${homeTeam.school.name}`,
+    },
+    subheadline: {
+      basic: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+    },
     content_elements: [
       // {
       //   type: "Best Play",
       //   description: longestScoringPlay
-      //     ? `${
-      //         longestScoringPlay?.player1Name
-      //       } scored the longest touchdown of the night on a ${
+      //     ? `${getPlayerName(
+      //         longestScoringPlay?.player1Id
+      //       )} scored the longest touchdown of the night on a ${
       //         longestScoringPlay?.lengthOfPlay
       //       }-yard ${longestScoringPlay?.playType?.toLowerCase()} in the ${longestScoringPlay?.quarter?.toLowerCase()}.`
       //     : "No scoring plays recorded.",
       // },
       {
-        type: "Key Moments",
-        description: keyMoments,
+        type: "text",
+        content: keyMoments.join("\n"),
       },
       {
-        type: "Top Performers",
-        players: topPerformers,
+        type: "text",
+        content: topPerformers
+          .map((p) => `${p.name} from ${p.team.name} had a ${p.statline}`)
+          .join("\n"),
       },
     ],
-    home_team: homeTeam,
-    away_team: awayTeam,
+    home_team: { ...game.home.season.team },
+    away_team: { ...game.away.season.team },
     game_comment: gameComment,
   };
 }
