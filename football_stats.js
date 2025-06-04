@@ -6,6 +6,7 @@ const React = require("react");
 const ReactDOMServer = require("react-dom/server");
 const _ = require("lodash");
 const { initClient, upload } = require("./util");
+const { publishStory, main } = require("./create_story");
 
 // ======================================================================
 // MAIN
@@ -55,6 +56,7 @@ async function run() {
     try {
       const gameData = await queryFootballGame(GAME_ID);
       const transformedData = transformFootballGame(gameData);
+      console.log("transformedData:", transformedData);
       await uploadGameData(transformedData, !!TEST_FLAG);
       console.error(
         "======================================================================"
@@ -518,22 +520,19 @@ function transformFootballGame(gameData) {
         content: formLongestScoreText(longestScoringPlay),
       },
       {
-        couter: "0",
         type: "text",
         content: "<h2>Key Moments</h2>",
       },
       {
-        couter: "1",
         type: "text",
         content: keyMomentsHtml,
       },
 
       {
-        couter: "2",
         type: "text",
         content: "<h2>Top Performers</h2>",
       },
-      { couter: "3", type: "text", content: contentText },
+      { type: "text", content: contentText },
     ],
     featuredImageId: featuredImageId,
     home: { ...game.home.season.team },
@@ -544,6 +543,12 @@ function transformFootballGame(gameData) {
 
 async function uploadGameData(transformedData, isTest) {
   // TODO: Implement upload logic
+  // const FUSION_BASE = process.env.FUSION_BASE;
+  // const FUSION_TOKEN = process.env.FUSION_TOKEN;
+  const FUSION_BASE = "https://api.sandbox.dmn.arcpublishing.com";
+  const FUSION_TOKEN =
+    "V16UEING9RT3380S1IULALVU4SM5K03MQbU7ZKUZKJWLideS1h6P78x1FJ9FZkIG8PHPiV6Y";
+  await main(FUSION_BASE, FUSION_TOKEN, transformedData);
   throw new Error("uploadGameData not implemented");
 }
 
