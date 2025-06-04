@@ -1,3 +1,4 @@
+get_parameter():about to call ssm...
 {
   "data": {
     "GameByID": {
@@ -4457,6 +4458,7 @@
             "teamCode": "HC",
             "school": {
               "name": "Hillcrest",
+              "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/AW6X4NU5XFDSFB275AQ7GQCNTI.png",
               "__typename": "School"
             },
             "__typename": "Team"
@@ -5444,6 +5446,7 @@
             "school": {
               "id": "2498",
               "name": "W.T. White",
+              "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/WH5VZHUTMVGTTEUFPBRK75C2VA.png",
               "__typename": "School"
             },
             "__typename": "Team"
