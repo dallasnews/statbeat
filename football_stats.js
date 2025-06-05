@@ -46,13 +46,12 @@ async function run() {
     }
   } else if (CMD === "query-transform-upload") {
     const GAME_ID = process.argv[3];
-    const TEST_FLAG = process.argv[4];
     console.error("Query, transform and upload football game:", GAME_ID);
     try {
       const gameData = await queryFootballGame(GAME_ID);
       const transformedData = transformFootballGame(gameData);
       console.log("transformedData:", transformedData);
-      await uploadGameData(transformedData, !!TEST_FLAG);
+      await uploadGameData(transformedData);
       console.error(
         "======================================================================"
       );
@@ -267,12 +266,25 @@ async function queryFootballGame(gameId) {
   }
 }
 
+/**
+ * Transforms raw football game data into a structured format for publishing to ARC CMS
+ * This function processes the raw GraphQL response and extracts key game elements:
+ * - Team and player statistics
+ * - Key moments and scoring plays
+ * - Game narrative and headlines
+ * - Featured images and content structure
+ *
+ * @param {Object} gameData - Raw game data from GraphQL query
+ * @returns {Object} Transformed data ready for publishing
+ */
 function transformFootballGame(gameData) {
+  // Extract the main game object from the GraphQL response
   const game = gameData.data.GameByID;
   if (!game) {
     throw new Error("No game data found");
   }
 
+  // Extract basic game information
   const homeScore = game.playsBlob?.home.teamStats.totalPoints || 0;
   const awayScore = game.playsBlob?.away.teamStats.totalPoints || 0;
   const gameDate = new Date(game.gameDateString).toLocaleDateString("en-US", {
@@ -281,7 +293,8 @@ function transformFootballGame(gameData) {
     year: "numeric",
   });
 
-  // Parse plays to find teams and players
+  // Parse plays to identify teams and players involved
+  // The plays array contains the chronological sequence of game events
   const plays = game.playsBlob?.summary || [];
   const teamIds = new Set(plays.map((play) => play.teamInPossessionId));
   const homeTeam = game.home.season.team;
@@ -289,7 +302,11 @@ function transformFootballGame(gameData) {
   const awayTeam = game.away.season.team;
   const awayTeamId = Array.from(teamIds)[1];
 
-  // Helper function to get player name from ID
+  /**
+   * Helper function to resolve player names from player IDs
+   * Searches through both home and away team rosters to find player information
+   * Falls back to play data if player not found in rosters
+   */
   const getPlayerName = (playerId) => {
     // Look in home team players
     const homePlayer = game.home?.players?.find(
@@ -307,16 +324,24 @@ function transformFootballGame(gameData) {
       return awayPlayer.player.person.name;
     }
 
-    // Fallback to player1Name if available
+    // Fallback to player1Name if available in play data
     const play = plays.find((p) => p.player1Id === playerId);
     return play?.player1Name || `Player ${playerId}`;
   };
 
-  // Extract player performances from plays
+  /**
+   * Process and aggregate player statistics from play-by-play data
+   * Tracks various statistics for each player:
+   * - Rushing yards and attempts
+   * - Passing yards, completions, and attempts
+   * - Receiving yards and receptions
+   * - Touchdowns and interceptions
+   */
   const playerStats = {};
   plays.forEach((play) => {
     if (play.player1Id) {
       const playerId = play.player1Id;
+      // Initialize player stats object if not exists
       if (!playerStats[playerId]) {
         playerStats[playerId] = {
           name: getPlayerName(playerId),
@@ -332,31 +357,42 @@ function transformFootballGame(gameData) {
         };
       }
 
-      // Update stats based on play type
+      // Update player statistics based on play type
+      // Each play type has specific statistics to track
       switch (play.playType) {
         case "run":
+          // Track rushing yards and touchdowns for running plays
           playerStats[playerId].rushingYards += play.lengthOfPlay || 0;
           if (play.includesTouchdown) playerStats[playerId].touchdowns++;
           break;
         case "pass":
+          // Track passing statistics including completions and attempts
           playerStats[playerId].passingYards += play.lengthOfPlay || 0;
           playerStats[playerId].attempts++;
           if (play.completion) playerStats[playerId].completions++;
           if (play.includesTouchdown) playerStats[playerId].touchdowns++;
           break;
         case "reception":
+          // Track receiving statistics for completed passes
           playerStats[playerId].receivingYards += play.lengthOfPlay || 0;
           playerStats[playerId].receptions++;
           if (play.includesTouchdown) playerStats[playerId].touchdowns++;
           break;
         case "interception":
+          // Track defensive interceptions
           playerStats[playerId].interceptions++;
           break;
       }
     }
   });
 
-  // Find top performers
+  /**
+   * Identify and format top performers based on statistical thresholds
+   * Players are considered top performers if they have:
+   * - More than 50 rushing yards, OR
+   * - More than 50 passing yards, OR
+   * - More than 50 receiving yards
+   */
   const topPerformers = Object.values(playerStats)
     .filter(
       (player) =>
@@ -367,6 +403,7 @@ function transformFootballGame(gameData) {
     .map((player) => ({
       name: player.name,
       team: player.team,
+      // Format player statistics into readable text
       statline: [
         player.rushingYards > 0 ? `${player.rushingYards} rushing yards` : null,
         player.passingYards > 0 ? `${player.passingYards} passing yards` : null,
@@ -391,13 +428,13 @@ function transformFootballGame(gameData) {
         .filter(Boolean)
         .join(", "),
     }))
+    // Sort by total yards (rushing + passing + receiving)
     .sort((a, b) => {
-      // Sort by total yards (rushing + passing + receiving)
       const aYards = parseInt(a.statline.match(/\d+/)?.[0] || "0");
       const bYards = parseInt(b.statline.match(/\d+/)?.[0] || "0");
       return bYards - aYards;
     })
-    .slice(0, 4);
+    .slice(0, 4); // Take top 4 performers
 
   // Turn into text paragraph:
   const contentText = topPerformers
@@ -412,7 +449,16 @@ function transformFootballGame(gameData) {
     })
     .join("<br>");
 
-  // Find key moments from plays
+  /**
+   * Process and format key moments from the game
+   * Key moments include:
+   * - Touchdowns
+   * - Interceptions
+   * - Fumbles
+   * - Field goals
+   * - Long plays (35+ yards)
+   * - Special teams plays (muffed punts)
+   */
   const keyMoments = [];
   const quarters = {};
   plays.forEach((play) => {
@@ -432,6 +478,10 @@ function transformFootballGame(gameData) {
     }
   });
 
+  /**
+   * Helper function to convert play types into past tense verbs
+   * Used for natural language generation of play descriptions
+   */
   const formPlayTense = (playType) => {
     if (playType === "run") return "ran";
     if (playType === "pass") return "passed";
@@ -589,18 +639,29 @@ function transformFootballGame(gameData) {
         content: "<h2>Top Performers</h2>",
       },
       { type: "text", content: contentText },
+      {
+        type: "text",
+        content: "<h2>Game Story</h2>",
+      },
+      {
+        type: "text",
+        content: gameComment,
+      },
     ],
     featuredImageId: featuredImageId,
-    game_comment: gameComment,
   };
 }
 
-async function uploadGameData(transformedData, isTest) {
+async function uploadGameData(transformedData) {
   const FUSION_BASE = process.env.FUSION_BASE;
   const FUSION_TOKEN = process.env.FUSION_TOKEN;
 
-  await publishStory(FUSION_BASE, FUSION_TOKEN, transformedData);
-  throw new Error("uploadGameData not implemented");
+  try {
+    await publishStory(FUSION_BASE, FUSION_TOKEN, transformedData);
+    console.log("Successfully published story");
+  } catch (e) {
+    throw new Error("uploadGameData Error", e);
+  }
 }
 
 function handleError(err) {
