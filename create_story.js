@@ -64,12 +64,12 @@ async function circulateStory(
   fusiontoken,
   documentId,
   date,
-  headlineSlug
+  gameId
 ) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
   const day = String(date.getDate()).padStart(2, "0");
-  const storyUrl = `/high-school-sports/${year}/${month}/${day}/${headlineSlug}/`;
+  const storyUrl = `/high-school-sports/${year}/${month}/${day}/${gameId}/`;
   console.log("storyUrl:", storyUrl);
   const circulation = {
     document_id: documentId,
@@ -230,7 +230,7 @@ function storyContentToANS(storyContent) {
 
 async function initializeStory(FUSION_BASE, FUSION_TOKEN, storyContent, ansDocument ) {
   const documentId = await createStory(FUSION_BASE, FUSION_TOKEN, ansDocument);
-  await circulateStory( FUSION_BASE, FUSION_TOKEN, documentId, new Date(), slugify(storyContent.headlines.basic) );
+  await circulateStory( FUSION_BASE, FUSION_TOKEN, documentId, new Date(), storyContent.game_id );
   const results = await publishDraftRevision( FUSION_BASE, FUSION_TOKEN, documentId );
 }
 
@@ -264,8 +264,7 @@ async function publishStory(FUSION_BASE, FUSION_TOKEN, storyContent) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-based
   const day = String(date.getDate()).padStart(2, "0");
-  const headlineSlug = slugify(storyContent.headlines.basic);
-  const storyUrl = `/high-school-sports/${year}/${month}/${day}/${headlineSlug}/`;
+  const storyUrl = `/high-school-sports/${year}/${month}/${day}/${storyContent.game_id}/`;
   const existingStory = await retrieveStoryByPath(FUSION_BASE, FUSION_TOKEN, storyUrl);
   if( existingStory ) {
     const documentId = existingStory._id;
