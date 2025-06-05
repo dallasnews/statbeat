@@ -498,12 +498,22 @@ function transformFootballGame(gameData) {
   const getTeamName = (teamId) => {
     return teamId === homeTeamId ? homeTeam.school.name : awayTeam.school.name;
   };
+  const quarterNames = {
+    1: "first",
+    2: "second",
+    3: "third",
+    4: "final",
+  };
 
   // Add key moments for each quarter with full player names and <h2> for quarter
+  const quarterMoments = [];
+
   Object.entries(quarters).forEach(([quarter, plays]) => {
     if (plays.length > 0) {
       // Add quarter header only once
-      keyMoments.push(`<h2>${quarter} Quarter</h2>`);
+      //  keyMoments.push(`<h2>${quarter} Quarter</h2>`);
+      const quarterText = quarterNames[quarter] || `${quarter}th`;
+      const momentsInQuarter = [];
 
       // Process all plays in the quarter
       plays.forEach((play) => {
@@ -550,12 +560,23 @@ function transformFootballGame(gameData) {
           }
         }
 
-        if (moment) keyMoments.push(moment);
+        if (moment) momentsInQuarter.push(moment);
       });
+      if (momentsInQuarter.length > 0) {
+        // Combine all moments into one sentence with commas and "and"
+        const joined =
+          momentsInQuarter.length === 1
+            ? momentsInQuarter[0]
+            : momentsInQuarter.slice(0, -1).join(", ") +
+              ", and " +
+              momentsInQuarter.slice(-1);
+
+        quarterMoments.push(`In the ${quarterText} quarter, ${joined}.`);
+      }
     }
   });
 
-  const keyMomentsHtml = keyMoments.join("<br>");
+  const keyMomentsHtml = quarterMoments.join(" ");
 
   // Find longest scoring play with full player name
   const scoringPlays = plays.filter((play) => play.includesTouchdown);
@@ -572,6 +593,10 @@ function transformFootballGame(gameData) {
     game.gameStory ||
     `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}. ` +
       `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
+
+  // Linking Game Page Url
+  const url = "";
+  const gamePageLink = `<a href="${url}"><strong><u><i>View the full game summary here</i></u></strong></a>`;
 
   const winningImage =
     homeScore > awayScore ? homeTeam.school : awayTeam.school;
@@ -659,6 +684,10 @@ function transformFootballGame(gameData) {
       {
         type: "text",
         content: gameComment,
+      },
+      {
+        type: "text",
+        content: gamePageLink,
       },
     ],
     game_id: game.id,
