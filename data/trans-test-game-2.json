@@ -1,0 +1,47 @@
+get_parameter():about to call ssm...
+{
+  "headlines": {
+    "basic": "W.T. White leads Hillcrest 31-6 at halftime"
+  },
+  "subheadlines": {},
+  "content_elements": [
+    {
+      "type": "text",
+      "content": "<h2>Longest Scoring Play</h2>"
+    },
+    {
+      "type": "text",
+      "content": "Andrew Paredez scored the longest touchdown of the night on a 11-yard pass in the fourth."
+    },
+    {
+      "type": "text",
+      "content": "<h2>Key Moments</h2>"
+    },
+    {
+      "type": "text",
+      "content": "In the first quarter, <strong>Asher Randall</strong> intercepted a pass, <strong>Ben Ebeke</strong> ran for a 3-yard touchdown, <strong>Andrew Paredez</strong> connected with <strong>Cooper Heller</strong> for a 43-yard pass, and <strong>Ben Ebeke</strong> ran for a 1-yard touchdown. In the second quarter, <strong>Andrew Paredez</strong> connected with <strong>Alexis Vargas</strong> for a 36-yard pass, and <strong>Noah Raphael</strong> kicked a 0-yard field goal. In the third quarter, <strong>Alejandro Barahona</strong> kicked a 25-yard field goal, <strong>Asher Randall</strong> connected with <strong>Jacoby Ogbanna</strong> for a 41-yard pass, <strong>Isaac Dorn</strong> ran for a 10-yard touchdown, and <strong>Ben Ebeke</strong> had a long 37-yard run. In the final quarter, <strong>Andrew Paredez</strong> passed to <strong>Alexis Vargas</strong> for a 11-yard touchdown, and <strong>Andrew Paredez</strong> passed to <strong>Ambrose Carter</strong> for a 6-yard touchdown."
+    },
+    {
+      "type": "text",
+      "content": "<h2>Top Performers</h2>"
+    },
+    {
+      "type": "text",
+      "content": "<strong>Ben Ebeke</strong> led W.T. White with 182 rushing yards, 2 TDs.<br><strong>Isaac Dorn</strong> followed for Hillcrest with 54 rushing yards, 1 TD.<br><strong>Asher Randall</strong> also contributed for Hillcrest with 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception.<br><strong>Andrew Paredez</strong> also contributed for W.T. White with 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing."
+    },
+    {
+      "type": "text",
+      "content": "<h2>Game Story</h2>"
+    },
+    {
+      "type": "text",
+      "content": " W.T White running back Ben Ebeke rushed for 182 yards and scored two touchdowns, as W.T. White rolled to a win over Hillcrest 30-6\n\nThe W.T.  White (1-0) defense only needed three plays before forcing the first interception of the year. Ebeke scored on a 3-yard run, then later from 1-yard out to give W.T. White a 14-0 halftime advantage. Quarterback Andrew Paredez helped put the game out of reach by throwing two fourth-quarter touchdowns, finishing with 197 yards on 14 of 21 passing.\n\nHillcrest (0-1) wide receiver Jacoby Ogbanna proved to be reliable all night, ending the contest with eight catches for 100 yards. Quarterback Asher Randall threw for 117 yards.\n"
+    },
+    {
+      "type": "text",
+      "content": "<a href=\"/high-school-sports/football/game/2024/107247\"><strong><u><i>View the full game summary here</i></u></strong></a>"
+    }
+  ],
+  "game_id": "107247",
+  "featuredImageId": "WH5VZHUTMVGTTEUFPBRK75C2VA"
+}
