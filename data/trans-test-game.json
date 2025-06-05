@@ -9,7 +9,7 @@ get_parameter():about to call ssm...
   "content_elements": [
     {
       "type": "text",
-      "content": "Longest Scoring Play"
+      "content": "<h2>Longest Scoring Play</h2>"
     },
     {
       "type": "text",
@@ -17,19 +17,15 @@ get_parameter():about to call ssm...
     },
     {
       "type": "text",
-      "content": "Key Moments"
+      "content": "<h2>Key Moments</h2>"
     },
     {
       "type": "text",
-      "content": [
-        "1 Quarter: Asher Randall intercepted a pass",
-        "3 Quarter: Isaac Dorn ran for a 10-yard touchdown",
-        "4 Quarter: Andrew Paredez passed for a 11-yard touchdown"
-      ]
+      "content": "<h2>4 Quarter</h2><strong>Andrew Paredez</strong> passed for a 11-yard touchdown"
     },
     {
       "type": "text",
-      "content": "Top Performers"
+      "content": "<h2>Top Performers</h2>"
     },
     {
       "type": "text",

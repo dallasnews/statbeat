@@ -424,7 +424,13 @@ function transformFootballGame(gameData) {
   const keyMoments = [];
   const quarters = {};
   plays.forEach((play) => {
-    if (play.includesTouchdown || play.playType === "interception") {
+    if (
+      play.includesTouchdown ||
+      play.playType === "interception" ||
+      play.playType === "fumble" ||
+      play.lengthOfPlay >= 35 ||
+      play.playType === "fieldGoal"
+    ) {
       const quarter = play.quarter;
       if (!quarters[quarter]) {
         quarters[quarter] = [];
@@ -513,7 +519,7 @@ function transformFootballGame(gameData) {
     content_elements: [
       {
         type: "text",
-        content: "Longest Scoring Play",
+        content: "<h2>Longest Scoring Play</h2>",
       },
       {
         type: "text",
@@ -542,14 +548,25 @@ function transformFootballGame(gameData) {
 }
 
 async function uploadGameData(transformedData, isTest) {
-  // TODO: Implement upload logic
-  // const FUSION_BASE = process.env.FUSION_BASE;
-  // const FUSION_TOKEN = process.env.FUSION_TOKEN;
-  const FUSION_BASE = "https://api.sandbox.dmn.arcpublishing.com";
-  const FUSION_TOKEN =
-    "V16UEING9RT3380S1IULALVU4SM5K03MQbU7ZKUZKJWLideS1h6P78x1FJ9FZkIG8PHPiV6Y";
-  await main(FUSION_BASE, FUSION_TOKEN, transformedData);
-  throw new Error("uploadGameData not implemented");
+  const FUSION_BASE = process.env.FUSION_BASE;
+  const FUSION_TOKEN = process.env.FUSION_TOKEN;
+
+  if (!FUSION_BASE || !FUSION_TOKEN) {
+    throw new Error(
+      "Missing required environment variables: FUSION_BASE and/or FUSION_TOKEN"
+    );
+  }
+
+  try {
+    await main(FUSION_BASE, FUSION_TOKEN, transformedData);
+    return {
+      success: true,
+      message: "Game data successfully uploaded",
+    };
+  } catch (error) {
+    console.error("Error uploading game data:", error);
+    throw new Error(`Failed to upload game data: ${error.message}`);
+  }
 }
 
 function handleError(err) {

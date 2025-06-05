@@ -208,7 +208,6 @@ function slugify(headline) {
 }
 
 function storyContentToANS(storyContent) {
-  console.log("storyContentToANS()", storyContent);
   const ans = {
     type: "story",
     version: "0.10.10",
@@ -237,7 +236,6 @@ function storyContentToANS(storyContent) {
 
 async function publishStory(FUSION_BASE, FUSION_TOKEN, storyContent) {
   const ansDocument = storyContentToANS(storyContent);
-  console.log("ansDocument:", ansDocument);
   const documentId = await createStory(FUSION_BASE, FUSION_TOKEN, ansDocument);
   await circulateStory(
     FUSION_BASE,
@@ -296,7 +294,6 @@ async function main(FUSION_BASE, FUSION_TOKEN, storyContent) {
   //       },
   //     ],
   //   };
-  console.log("storyContent:", storyContent);
   publishStory(FUSION_BASE, FUSION_TOKEN, storyContent);
 }
 
