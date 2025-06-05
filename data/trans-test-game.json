@@ -21,7 +21,7 @@ get_parameter():about to call ssm...
     },
     {
       "type": "text",
-      "content": "<h2>4 Quarter</h2><strong>Andrew Paredez</strong> passed for a 11-yard touchdown"
+      "content": "<h2>1 Quarter</h2><br><strong>Asher Randall</strong> intercepted a pass<br><strong>Ben Ebeke</strong> ran for a 3-yard touchdown<br><strong>Andrew Paredez</strong> connected with <strong>Cooper Heller</strong> for a 43-yard pass<br><strong>Ben Ebeke</strong> ran for a 1-yard touchdown<br><h2>2 Quarter</h2><br><strong>Andrew Paredez</strong> connected with <strong>Alexis Vargas</strong> for a 36-yard pass<br><strong>Noah Raphael</strong> kicked a 0-yard field goal<br><h2>3 Quarter</h2><br><strong>Alejandro Barahona</strong> kicked a 25-yard field goal<br><strong>Asher Randall</strong> connected with <strong>Jacoby Ogbanna</strong> for a 41-yard pass<br><strong>Isaac Dorn</strong> ran for a 10-yard touchdown<br><strong>Ben Ebeke</strong> had a long 37-yard run<br><h2>4 Quarter</h2><br><strong>Andrew Paredez</strong> passed to <strong>Alexis Vargas</strong> for a 11-yard touchdown<br><strong>Andrew Paredez</strong> passed to <strong>Ambrose Carter</strong> for a 6-yard touchdown"
     },
     {
       "type": "text",
@@ -29,31 +29,9 @@ get_parameter():about to call ssm...
     },
     {
       "type": "text",
-      "content": "Ben Ebeke led W.T. White with 182 rushing yards, 2 TDs. Isaac Dorn followed for Hillcrest with 54 rushing yards, 1 TD. Asher Randall also contributed for Hillcrest with 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception. Andrew Paredez also contributed for W.T. White with 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing."
+      "content": "<strong>Ben Ebeke</strong> led W.T. White with 182 rushing yards, 2 TDs.<br><strong>Isaac Dorn</strong> followed for Hillcrest with 54 rushing yards, 1 TD.<br><strong>Asher Randall</strong> also contributed for Hillcrest with 16 rushing yards, 117 passing yards, 0/12 passing, 1 interception.<br><strong>Andrew Paredez</strong> also contributed for W.T. White with 4 rushing yards, 197 passing yards, 2 TDs, 0/14 passing."
     }
   ],
   "featuredImageId": "WH5VZHUTMVGTTEUFPBRK75C2VA",
-  "home": {
-    "name": "Panthers",
-    "teamCode": "HC",
-    "school": {
-      "name": "Hillcrest",
-      "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/AW6X4NU5XFDSFB275AQ7GQCNTI.png",
-      "__typename": "School"
-    },
-    "__typename": "Team"
-  },
-  "away": {
-    "id": "1992",
-    "name": "Longhorns",
-    "teamCode": "WT",
-    "school": {
-      "id": "2498",
-      "name": "W.T. White",
-      "logoUrl": "https://cloudfront-us-east-1.images.arcpublishing.com/sandbox.dmn/WH5VZHUTMVGTTEUFPBRK75C2VA.png",
-      "__typename": "School"
-    },
-    "__typename": "Team"
-  },
   "game_comment": " W.T White running back Ben Ebeke rushed for 182 yards and scored two touchdowns, as W.T. White rolled to a win over Hillcrest 30-6\n\nThe W.T.  White (1-0) defense only needed three plays before forcing the first interception of the year. Ebeke scored on a 3-yard run, then later from 1-yard out to give W.T. White a 14-0 halftime advantage. Quarterback Andrew Paredez helped put the game out of reach by throwing two fourth-quarter touchdowns, finishing with 197 yards on 14 of 21 passing.\n\nHillcrest (0-1) wide receiver Jacoby Ogbanna proved to be reliable all night, ending the contest with eight catches for 100 yards. Quarterback Asher Randall threw for 117 yards.\n"
 }
