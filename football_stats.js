@@ -602,17 +602,28 @@ function transformFootballGame(gameData) {
   };
 
   const setSubheadline = () => {
+    if (game.gameStatus === "FINAL") {
+      return `The football game was played on ${gameDate} at ${homeTeam.school.name}.`;
+    }
+  };
+
+  const setHeadline = () => {
     const higherScore = Math.max(homeScore, awayScore);
     const lowerScore = Math.min(homeScore, awayScore);
 
     if (game.gameStatus === "FINAL") {
-      return `${winningTeam} defeated ${losingTeam} ${higherScore}-${lowerScore} on ${gameDate}`;
-    } else
-      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore} at ${homeTeam.school.name}`;
+      return `${winningTeam} defeats ${losingTeam} ${higherScore}-${lowerScore}`;
+    } else if (game.gameStatus === "HALFTIME") {
+      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore} at halftime`;
+    } else if (game.gameStatus === "LIVE") {
+      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore}`;
+    } else {
+      return `${awayTeam.school.name} at ${homeTeam.school.name}`;
+    }
   };
 
   return {
-    headlines: { basic: `${awayTeam.school.name} at ${homeTeam.school.name}` },
+    headlines: { basic: setHeadline() },
     subheadlines: {
       basic: setSubheadline(),
     },
@@ -648,6 +659,7 @@ function transformFootballGame(gameData) {
         content: gameComment,
       },
     ],
+    game_id: game.id,
     featuredImageId: featuredImageId,
   };
 }

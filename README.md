@@ -72,7 +72,6 @@ node football_stats.js query-transform-upload <GAME_ID>
 - `query-game`: Retrieves raw game data from the GraphQL API
 - `transform-game`: Processes raw game data into a publishable format
 - `query-transform-upload`: Complete pipeline from query to publication
-  - Optional `TEST_FLAG` parameter for test environment publishing
 
 ## Data Flow
 
@@ -91,7 +90,7 @@ node football_stats.js query-transform-upload <GAME_ID>
    - Game narrative
    - Featured images
 
-3. **Upload**: Publishes content to the CMS with:
+3. **Upload**: Publishes content to the ARC CMS with:
    - Structured content elements
    - Associated media
    - Proper formatting and styling
@@ -110,9 +109,7 @@ To add support for a new sport:
 ## Future Enhancements
 
 - Add support for more sports (basketball, baseball, etc.)
-- Implement real-time game updates
 - Add support for historical data analysis
-- Enhance content generation with AI/ML capabilities
 - Add support for custom content templates
 
 ## Contributing
