@@ -296,6 +296,7 @@ function transformFootballGame(gameData) {
   // Parse plays to identify teams and players involved
   // The plays array contains the chronological sequence of game events
   const plays = game.playsBlob?.summary || [];
+  const lastPlay = plays[plays.length - 1];
   const teamIds = new Set(plays.map((play) => play.teamInPossessionId));
   const homeTeam = game.home.season.team;
   const homeTeamId = Array.from(teamIds)[0];
@@ -604,19 +605,20 @@ function transformFootballGame(gameData) {
   const setSubheadline = () => {
     if (game.gameStatus === "FINAL") {
       return `The football game was played on ${gameDate} at ${homeTeam.school.name}.`;
-    }
+    } else
+      return `The football game is currently being played at ${homeTeam.school.name}.`;
   };
 
   const setHeadline = () => {
     const higherScore = Math.max(homeScore, awayScore);
     const lowerScore = Math.min(homeScore, awayScore);
-
+    const quarter = formatQuarter(lastPlay.quarter);
     if (game.gameStatus === "FINAL") {
       return `${winningTeam} defeats ${losingTeam} ${higherScore}-${lowerScore}`;
     } else if (game.gameStatus === "HALFTIME") {
       return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore} at halftime`;
     } else if (game.gameStatus === "LIVE") {
-      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore}`;
+      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore} entering the ${quarter} quarter`;
     } else {
       return `${awayTeam.school.name} at ${homeTeam.school.name}`;
     }
