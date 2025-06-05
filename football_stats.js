@@ -594,7 +594,7 @@ function transformFootballGame(gameData) {
       `The game was highlighted by ${topPerformers[0]?.name}'s performance with ${topPerformers[0]?.statline}.`;
 
   // Linking Game Page Url
-  const url = "";
+  const url = `/high-school-sports/football/game/2024/${game.id}`;
   const gamePageLink = `<a href="${url}"><strong><u><i>View the full game summary here</i></u></strong></a>`;
 
   const winningImage =
