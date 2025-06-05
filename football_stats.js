@@ -657,6 +657,14 @@ function transformFootballGame(gameData) {
     content_elements: [
       {
         type: "text",
+        content: "<h2>Game Story</h2>",
+      },
+      {
+        type: "text",
+        content: gameComment,
+      },
+      {
+        type: "text",
         content: "<h2>Longest Scoring Play</h2>",
       },
       {
@@ -671,20 +679,11 @@ function transformFootballGame(gameData) {
         type: "text",
         content: keyMomentsHtml,
       },
-
       {
         type: "text",
         content: "<h2>Top Performers</h2>",
       },
       { type: "text", content: contentText },
-      {
-        type: "text",
-        content: "<h2>Game Story</h2>",
-      },
-      {
-        type: "text",
-        content: gameComment,
-      },
       {
         type: "text",
         content: gamePageLink,
