@@ -412,13 +412,13 @@ function transformFootballGame(gameData) {
     .map((p, i) => {
       const intro =
         i === 0
-          ? `${p.name} led ${p.team.school.name}`
+          ? `<strong>${p.name}</strong> led ${p.team.school.name}`
           : i === 1
-          ? `${p.name} followed for ${p.team.school.name}`
-          : `${p.name} also contributed for ${p.team.school.name}`;
+          ? `<strong>${p.name}</strong> followed for ${p.team.school.name}`
+          : `<strong>${p.name}</strong> also contributed for ${p.team.school.name}`;
       return `${intro} with ${p.statline}.`;
     })
-    .join(" ");
+    .join("<br>");
 
   // Find key moments from plays
   const keyMoments = [];
@@ -428,8 +428,8 @@ function transformFootballGame(gameData) {
       play.includesTouchdown ||
       play.playType === "interception" ||
       play.playType === "fumble" ||
-      play.lengthOfPlay >= 35 ||
-      play.playType === "fieldGoal"
+      play.playType === "fieldGoal" ||
+      play.lengthOfPlay >= 35
     ) {
       const quarter = play.quarter;
       if (!quarters[quarter]) {
@@ -444,23 +444,59 @@ function transformFootballGame(gameData) {
     if (playType === "pass") return "passed";
     if (playType === "reception") return "caught a pass";
     if (playType === "interception") return "intercepted";
+    if (playType === "fumble") return "fumbled";
+    if (playType === "fieldGoal") return "kicked a field goal";
     return playType.toLowerCase();
   };
 
-  // Add one key moment per quarter with full player names and <h2> for quarter
+  // Add key moments for each quarter with full player names and <h2> for quarter
   Object.entries(quarters).forEach(([quarter, plays]) => {
     if (plays.length > 0) {
-      const play = plays[0];
-      let moment = "";
-      const playerName = getPlayerName(play.player1Id);
-      if (play.includesTouchdown) {
-        moment = `<h2>${quarter} Quarter</h2><strong>${playerName}</strong> ${formPlayTense(
-          play.playType
-        )} for a ${play.lengthOfPlay}-yard touchdown`;
-      } else if (play.playType === "interception") {
-        moment = `<h2>${quarter} Quarter</h2><strong>${playerName}</strong> intercepted a pass`;
-      }
-      if (moment) keyMoments.push(moment);
+      // Add quarter header only once
+      keyMoments.push(`<h2>${quarter} Quarter</h2>`);
+
+      // Process all plays in the quarter
+      plays.forEach((play) => {
+        let moment = "";
+        const playerName = getPlayerName(play.player1Id);
+        const secondPlayerName = play.player2Id
+          ? getPlayerName(play.player2Id)
+          : null;
+
+        if (play.includesTouchdown) {
+          moment = `<strong>${playerName}</strong> ${formPlayTense(
+            play.playType
+          )}${
+            secondPlayerName ? ` to <strong>${secondPlayerName}</strong>` : ""
+          } for a ${play.lengthOfPlay}-yard touchdown`;
+        } else if (play.playType === "interception") {
+          moment = `<strong>${playerName}</strong> intercepted a pass`;
+        } else if (play.playType === "fumble") {
+          moment = `<strong>${playerName}</strong> fumbled the ball`;
+        } else if (play.playType === "fieldGoal") {
+          moment = `<strong>${playerName}</strong> kicked a ${play.lengthOfPlay}-yard field goal`;
+        } else if (play.lengthOfPlay >= 35) {
+          // Handle long plays
+          if (play.playType === "run") {
+            moment = `<strong>${playerName}</strong> had a long ${play.lengthOfPlay}-yard run`;
+          } else if (
+            play.playType === "pass" ||
+            play.playType === "reception"
+          ) {
+            const passerName =
+              play.playType === "reception"
+                ? getPlayerName(play.player2Id)
+                : playerName;
+            const receiverName =
+              play.playType === "pass"
+                ? getPlayerName(play.player2Id)
+                : playerName;
+            moment = `<strong>${passerName}</strong> connected with <strong>${receiverName}</strong> for a ${play.lengthOfPlay}-yard pass`;
+          }
+        }
+
+        if (moment) keyMoments.push(moment);
+      });
     }
   });
 
@@ -541,8 +577,6 @@ function transformFootballGame(gameData) {
       { type: "text", content: contentText },
     ],
     featuredImageId: featuredImageId,
-    home: { ...game.home.season.team },
-    away: { ...game.away.season.team },
     game_comment: gameComment,
   };
 }
@@ -551,22 +585,8 @@ async function uploadGameData(transformedData, isTest) {
   const FUSION_BASE = process.env.FUSION_BASE;
   const FUSION_TOKEN = process.env.FUSION_TOKEN;
 
-  if (!FUSION_BASE || !FUSION_TOKEN) {
-    throw new Error(
-      "Missing required environment variables: FUSION_BASE and/or FUSION_TOKEN"
-    );
-  }
-
-  try {
-    await main(FUSION_BASE, FUSION_TOKEN, transformedData);
-    return {
-      success: true,
-      message: "Game data successfully uploaded",
-    };
-  } catch (error) {
-    console.error("Error uploading game data:", error);
-    throw new Error(`Failed to upload game data: ${error.message}`);
-  }
+  await main(FUSION_BASE, FUSION_TOKEN, transformedData);
+  throw new Error("uploadGameData not implemented");
 }
 
 function handleError(err) {
