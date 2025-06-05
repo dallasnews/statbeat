@@ -1,12 +1,7 @@
 require("dotenv").config();
-const { readFile } = require("fs").promises;
-const util = require("./util");
-const { gql, ApolloQueryResult } = require("@apollo/client");
-const React = require("react");
-const ReactDOMServer = require("react-dom/server");
-const _ = require("lodash");
-const { initClient, upload } = require("./util");
-const { publishStory, main } = require("./create_story");
+const { gql } = require("@apollo/client");
+const { initClient } = require("./util");
+const { publishStory } = require("./create_story");
 
 // ======================================================================
 // MAIN
@@ -278,9 +273,6 @@ function transformFootballGame(gameData) {
     throw new Error("No game data found");
   }
 
-  // Extract basic game info from plays
-  // const lastPlay =
-  //   game.playsBlob?.summary[game.playsBlob.summary.length - 1] || {};
   const homeScore = game.playsBlob?.home.teamStats.totalPoints || 0;
   const awayScore = game.playsBlob?.away.teamStats.totalPoints || 0;
   const gameDate = new Date(game.gameDateString).toLocaleDateString("en-US", {
@@ -429,7 +421,8 @@ function transformFootballGame(gameData) {
       play.playType === "interception" ||
       play.playType === "fumble" ||
       play.playType === "fieldGoal" ||
-      play.lengthOfPlay >= 35
+      play.lengthOfPlay >= 35 ||
+      play.playType === "muffedPunt"
     ) {
       const quarter = play.quarter;
       if (!quarters[quarter]) {
@@ -446,7 +439,13 @@ function transformFootballGame(gameData) {
     if (playType === "interception") return "intercepted";
     if (playType === "fumble") return "fumbled";
     if (playType === "fieldGoal") return "kicked a field goal";
+    if (playType === "muffedPunt") return "muffed a punt";
     return playType.toLowerCase();
+  };
+
+  // Helper function to get team name from ID
+  const getTeamName = (teamId) => {
+    return teamId === homeTeamId ? homeTeam.school.name : awayTeam.school.name;
   };
 
   // Add key moments for each quarter with full player names and <h2> for quarter
@@ -475,6 +474,11 @@ function transformFootballGame(gameData) {
           moment = `<strong>${playerName}</strong> fumbled the ball`;
         } else if (play.playType === "fieldGoal") {
           moment = `<strong>${playerName}</strong> kicked a ${play.lengthOfPlay}-yard field goal`;
+        } else if (play.playType === "muffedPunt") {
+          const recoveringTeam = getTeamName(play.muffedPuntRecoveredByTeamId);
+          moment = `${getTeamName(
+            play.teamInPossessionId
+          )} muffed a punt, recovered by ${recoveringTeam}`;
         } else if (play.lengthOfPlay >= 35) {
           // Handle long plays
           if (play.playType === "run") {
@@ -547,10 +551,20 @@ function transformFootballGame(gameData) {
     )}.`;
   };
 
+  const setSubheadline = () => {
+    const higherScore = Math.max(homeScore, awayScore);
+    const lowerScore = Math.min(homeScore, awayScore);
+
+    if (game.gameStatus === "FINAL") {
+      return `${winningTeam} defeated ${losingTeam} ${higherScore}-${lowerScore} on ${gameDate}`;
+    } else
+      return `${winningTeam} leads ${losingTeam} ${higherScore}-${lowerScore} at ${homeTeam.school.name}`;
+  };
+
   return {
-    headlines: { basic: `${awayTeam.school.name} vs ${homeTeam.school.name}` },
+    headlines: { basic: `${awayTeam.school.name} at ${homeTeam.school.name}` },
     subheadlines: {
-      basic: `${winningTeam} defeated ${losingTeam} ${homeScore}-${awayScore} on ${gameDate}`,
+      basic: setSubheadline(),
     },
     content_elements: [
       {
@@ -585,7 +599,7 @@ async function uploadGameData(transformedData, isTest) {
   const FUSION_BASE = process.env.FUSION_BASE;
   const FUSION_TOKEN = process.env.FUSION_TOKEN;
 
-  await main(FUSION_BASE, FUSION_TOKEN, transformedData);
+  await publishStory(FUSION_BASE, FUSION_TOKEN, transformedData);
   throw new Error("uploadGameData not implemented");
 }
 
